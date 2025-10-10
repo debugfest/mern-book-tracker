@@ -1,0 +1,20 @@
+{
+  "name": "book-tracker-server",
+  "version": "1.0.0",
+  "description": "Backend server for Book Tracker application",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["book", "tracker", "express", "mongodb"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^8.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  }
+}
