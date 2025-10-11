@@ -111,18 +111,29 @@ function App() {
     setShowForm(true);
   };
 
-  // Handle delete button click
-  const handleDelete = async (id: string) => {
-    // Confirm before deleting
-    if (!confirm('Are you sure you want to delete this book?')) {
-      return;
-    }
+  // State for modal visibility and selected book to delete
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteBookId, setDeleteBookId] = useState<string | null>(null);
 
+  // Open modal and set book id
+  const openDeleteModal = (id: string) => {
+    setDeleteBookId(id);
+    setShowDeleteModal(true);
+  };
+
+  // Close modal
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setDeleteBookId(null);
+  };
+
+  // Confirm delete
+  const handleDelete = async () => {
+    if (!deleteBookId) return;
     try {
-      const response = await fetch(`${API_URL}/books/${id}`, {
+      const response = await fetch(`${API_URL}/books/${deleteBookId}`, {
         method: 'DELETE'
       });
-
       if (response.ok) {
         alert('Book deleted successfully!');
         fetchBooks();
@@ -131,6 +142,7 @@ function App() {
       console.error('Error deleting book:', error);
       alert('Failed to delete book');
     }
+    closeDeleteModal();
   };
 
   // Reset form to initial state
@@ -447,7 +459,7 @@ function App() {
                         </button>
                         {/* Delete Button */}
                         <button
-                          onClick={() => handleDelete(book._id)}
+                          onClick={() => openDeleteModal(book._id)}
                           style={{
                             backgroundColor: '#ef4444',
                             color: 'white',
@@ -473,6 +485,65 @@ function App() {
           )}
         </div>
       </div>
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(0,0,0,0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: 'white',
+            padding: '32px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+            minWidth: '320px',
+            textAlign: 'center'
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>Confirm Delete</h3>
+            <p style={{ marginBottom: '24px', color: '#374151' }}>Are you sure you want to delete this book?</p>
+            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+              <button
+                onClick={handleDelete}
+                style={{
+                  backgroundColor: '#ef4444',
+                  color: 'white',
+                  padding: '8px 20px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontWeight: '500',
+                  fontSize: '14px'
+                }}
+              >
+                Delete
+              </button>
+              <button
+                onClick={closeDeleteModal}
+                style={{
+                  backgroundColor: '#6b7280',
+                  color: 'white',
+                  padding: '8px 20px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontWeight: '500',
+                  fontSize: '14px'
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
