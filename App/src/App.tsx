@@ -1,6 +1,7 @@
 // Import React hooks for state management and side effects
 import { useState, useEffect } from 'react';
 import { Plus, CreditCard as Edit2, Trash2, BookOpen } from 'lucide-react';
+import ConfirmModal from './Components/Common/ConfirmModal';
 
 // Define TypeScript interface for Book object
 interface Book {
@@ -30,6 +31,9 @@ function App() {
     year: new Date().getFullYear(),
     status: 'to-read' as 'read' | 'reading' | 'to-read'
   });
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [bookToDelete, setBookToDelete] = useState<string | null>(null);
 
   // Backend API URL
   const API_URL = 'http://localhost:5000/api';
@@ -112,25 +116,35 @@ function App() {
   };
 
   // Handle delete button click
-  const handleDelete = async (id: string) => {
-    // Confirm before deleting
-    if (!confirm('Are you sure you want to delete this book?')) {
-      return;
-    }
+      const handleDeleteClick = (id: string) => {
+    setBookToDelete(id);   // store the book ID
+    setIsModalOpen(true);  // open confirmation modal
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!bookToDelete) return;
 
     try {
-      const response = await fetch(`${API_URL}/books/${id}`, {
-        method: 'DELETE'
+      const response = await fetch(`${API_URL}/books/${bookToDelete}`, {
+        method: "DELETE",
       });
 
       if (response.ok) {
-        alert('Book deleted successfully!');
+        alert("Book deleted successfully!");
         fetchBooks();
       }
     } catch (error) {
-      console.error('Error deleting book:', error);
-      alert('Failed to delete book');
+      console.error("Error deleting book:", error);
+      alert("Failed to delete book");
+    } finally {
+      setIsModalOpen(false);
+      setBookToDelete(null);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setIsModalOpen(false);
+    setBookToDelete(null);
   };
 
   // Reset form to initial state
@@ -447,7 +461,7 @@ function App() {
                         </button>
                         {/* Delete Button */}
                         <button
-                          onClick={() => handleDelete(book._id)}
+                          onClick={() => handleDeleteClick(book._id)}
                           style={{
                             backgroundColor: '#ef4444',
                             color: 'white',
@@ -473,6 +487,13 @@ function App() {
           )}
         </div>
       </div>
+      <ConfirmModal
+          isOpen={isModalOpen}
+          title="Confirm Delete"
+          message="Are you sure you want to delete this book?"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
     </div>
   );
 }
