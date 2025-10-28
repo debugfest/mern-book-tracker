@@ -31,6 +31,50 @@ const bookSchema = new mongoose.Schema({
     type: String,
     enum: ['read', 'reading', 'to-read'],
     default: 'to-read'
+  },
+  // ISBN for book identification
+  isbn: {
+    type: String,
+    trim: true
+  },
+  // Total page count
+  pageCount: {
+    type: Number,
+    min: 0
+  },
+  // Current page for books being read
+  currentPage: {
+    type: Number,
+    min: 0,
+    default: 0
+  },
+  // Book description
+  description: {
+    type: String,
+    trim: true
+  },
+  // User rating (1-5 stars)
+  rating: {
+    type: Number,
+    min: 1,
+    max: 5
+  },
+  // Book cover image URL
+  coverImage: {
+    type: String,
+    trim: true
+  },
+  // Reading start date
+  startDate: {
+    type: Date
+  },
+  // Reading finish date
+  finishDate: {
+    type: Date
+  },
+  // Publication date (more specific than year)
+  publicationDate: {
+    type: Date
   }
 }, {
   // Automatically add createdAt and updatedAt timestamps
